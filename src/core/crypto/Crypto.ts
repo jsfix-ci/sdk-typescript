@@ -98,6 +98,7 @@ export class Crypto {
         const encIv = Buffer.from(iv);
         const cipher = crypto.createCipheriv(Crypto.AES_ALGO, encKey, encIv);
         const encrypted = Buffer.concat([cipher.update(Buffer.from(convert.hexToUint8(msg))), cipher.final()]);
+        // @ts-ignore
         const tag = cipher.getAuthTag();
         // Result
         const result = tag.toString('hex') + encIv.toString('hex') + encrypted.toString('hex');
@@ -145,6 +146,7 @@ export class Crypto {
         const encIv = Buffer.from(new Uint8Array(tagAndIv.buffer, 16, 12));
         const encTag = Buffer.from(new Uint8Array(tagAndIv.buffer, 0, 16));
         const cipher = crypto.createDecipheriv(Crypto.AES_ALGO, encKey, encIv);
+        // @ts-ignore
         cipher.setAuthTag(encTag);
         const decrypted = Buffer.concat([cipher.update(Buffer.from(payload)), cipher.final()]);
         // Result

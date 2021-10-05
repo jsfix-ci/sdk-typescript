@@ -1,7 +1,7 @@
 {
-    "name": "symbol-sdk",
+    "name": "@dhealth/sdk",
     "version": "1.0.2",
-    "description": "Reactive symbol sdk for typescript and javascript",
+    "description": "Reactive dHealth sdk for typescript and javascript",
     "scripts": {
         "pretest": "npm run build",
         "prepack": "npm run build",
@@ -30,34 +30,19 @@
         "bootstrap-compose": "symbol-bootstrap compose -t target/bootstrap-test",
         "bootstrap-config": "symbol-bootstrap config -p bootstrap -c ./e2e/e2e-preset.yml -t target/bootstrap-test"
     },
-    "pre-commit": [
-        "lint"
-    ],
     "contributors": [
         {
-            "name": "Steven Liu",
-            "email": "steven.liu@nem.software"
-        },
-        {
-            "name": "Fernando Boucquez",
-            "email": "fernando.boucquez@nem.software"
-        },
-        {
-            "name": "Aleix",
-            "email": "aleix@nemeurope.eu"
-        },
-        {
-            "name": "Guillem",
-            "email": "guillem@nemeurope.eu"
+            "name": "dHealth Foundation",
+            "email": "info@dhealth.foundation"
         }
     ],
-    "bugs": "https://github.com/nemtech/symbol-sdk-typescript-javascript/issues",
+    "bugs": "https://github.com/dhealthproject/sdk-typescript/issues",
     "repository": {
         "type": "git",
-        "url": "https://github.com/nemtech/symbol-sdk-typescript-javascript.git"
+        "url": "https://github.com/dhealthproject/sdk-typescript.git"
     },
     "license": "Apache-2.0",
-    "homepage": "https://github.com/nemtech/symbol-sdk-typescript-javascript#readme",
+    "homepage": "https://github.com/dhealthproject/sdk-typescript#readme",
     "main": "dist/index.js",
     "typings": "dist/index.d.ts",
     "devDependencies": {
