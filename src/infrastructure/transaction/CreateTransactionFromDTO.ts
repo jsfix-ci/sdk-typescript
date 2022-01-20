@@ -524,8 +524,8 @@ export const CreateTransactionFromDTO = (transactionDTO): Transaction => {
                 ? transactionDTO.transaction.cosignatures.map((aggregateCosignatureDTO) => {
                       return new AggregateTransactionCosignature(
                           aggregateCosignatureDTO.signature,
-                          PublicAccount.createFromPublicKey(aggregateCosignatureDTO.signerPublicKey.publicKey, transactionDTO.transaction.network),
-                          new UInt64(aggregateCosignatureDTO.version),
+                          PublicAccount.createFromPublicKey(aggregateCosignatureDTO.signerPublicKey, transactionDTO.transaction.network),
+                          UInt64.fromUint(aggregateCosignatureDTO.version),
                       );
                   })
                 : [],
