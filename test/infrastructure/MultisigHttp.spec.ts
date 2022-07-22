@@ -1,3 +1,4 @@
+import { lastValueFrom } from 'rxjs';
 /*
  * Copyright 2020 NEM
  *
@@ -75,7 +76,7 @@ describe('MultisigHttp', () => {
 
     it('getMultisigAccountInfo', async () => {
         when(multisigRoutesApi.getAccountMultisig(address.plain())).thenReturn(Promise.resolve(accountInfoDto));
-        const accountInfo = await accountRepository.getMultisigAccountInfo(address).toPromise();
+        const accountInfo = await lastValueFrom(accountRepository.getMultisigAccountInfo(address));
         assertMultisigInfo(accountInfo);
     });
 
@@ -88,7 +89,7 @@ describe('MultisigHttp', () => {
         body2.level = 20;
         body2.multisigEntries = [accountInfoDto, accountInfoDto];
         when(multisigRoutesApi.getAccountMultisigGraph(address.plain())).thenReturn(Promise.resolve([body, body2]));
-        const graphInfo = await accountRepository.getMultisigAccountGraphInfo(address).toPromise();
+        const graphInfo = await lastValueFrom(accountRepository.getMultisigAccountGraphInfo(address));
         expect(graphInfo.multisigEntries.size).to.be.eq(2);
         const list10: MultisigAccountInfo[] = graphInfo.multisigEntries.get(10) as MultisigAccountInfo[];
         expect(list10.length).to.be.eq(3);

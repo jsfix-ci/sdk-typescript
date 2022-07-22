@@ -1,3 +1,4 @@
+import { lastValueFrom } from 'rxjs';
 /*
  * Copyright 2018 NEM
  *
@@ -86,7 +87,7 @@ describe('TransactionHttp', () => {
         const signedTx = account.sign(aggTx, generationHash);
         const trnsHttp = new TransactionHttp(NIS2_URL, 1573430400);
         expect(() => {
-            trnsHttp.announceAggregateBonded(signedTx).toPromise().then();
+            lastValueFrom(trnsHttp.announceAggregateBonded(signedTx)).then();
         }).to.throw(Error, 'Only Transaction Type 0x4241 is allowed for announce aggregate bonded');
     });
 
@@ -179,7 +180,7 @@ describe('TransactionHttp', () => {
             ),
         ).thenReturn(Promise.resolve(page));
 
-        let transactions = await transactionHttp.search({ group: TransactionGroup.Confirmed, address: account.address }).toPromise();
+        let transactions = await lastValueFrom(transactionHttp.search({ group: TransactionGroup.Confirmed, address: account.address }));
 
         expect(transactions.data.length).to.be.equal(1);
         expect(transactions.data[0].type.valueOf()).to.be.equal(TransactionType.TRANSFER.valueOf());
@@ -192,7 +193,7 @@ describe('TransactionHttp', () => {
         expect(transactions.pageNumber).to.be.equal(1);
         expect(transactions.pageSize).to.be.equal(1);
 
-        transactions = await transactionHttp.search({ group: TransactionGroup.Unconfirmed, address: account.address }).toPromise();
+        transactions = await lastValueFrom(transactionHttp.search({ group: TransactionGroup.Unconfirmed, address: account.address }));
 
         expect(transactions.data.length).to.be.equal(1);
         expect(transactions.data[0].type.valueOf()).to.be.equal(TransactionType.TRANSFER.valueOf());
@@ -205,7 +206,7 @@ describe('TransactionHttp', () => {
         expect(transactions.pageNumber).to.be.equal(1);
         expect(transactions.pageSize).to.be.equal(1);
 
-        transactions = await transactionHttp.search({ group: TransactionGroup.Partial, address: account.address }).toPromise();
+        transactions = await lastValueFrom(transactionHttp.search({ group: TransactionGroup.Partial, address: account.address }));
 
         expect(transactions.data.length).to.be.equal(1);
         expect(transactions.data[0].type.valueOf()).to.be.equal(TransactionType.TRANSFER.valueOf());
@@ -245,7 +246,7 @@ describe('TransactionHttp', () => {
         when(transactionRoutesApi.getPartialTransaction(generationHash)).thenReturn(Promise.resolve(transactionInfoDto));
         when(transactionRoutesApi.getUnconfirmedTransaction(generationHash)).thenReturn(Promise.resolve(transactionInfoDto));
 
-        let transaction = await transactionHttp.getTransaction(generationHash, TransactionGroup.Confirmed).toPromise();
+        let transaction = await lastValueFrom(transactionHttp.getTransaction(generationHash, TransactionGroup.Confirmed));
 
         expect(transaction.type.valueOf()).to.be.equal(TransactionType.TRANSFER.valueOf());
         expect(((transaction as TransferTransaction).recipientAddress as Address).plain()).to.be.equal(
@@ -254,7 +255,7 @@ describe('TransactionHttp', () => {
         expect(transaction.transactionInfo?.id).to.be.equal('id');
         expect(transaction.transactionInfo?.hash).to.be.equal('hash');
 
-        transaction = await transactionHttp.getTransaction(generationHash, TransactionGroup.Partial).toPromise();
+        transaction = await lastValueFrom(transactionHttp.getTransaction(generationHash, TransactionGroup.Partial));
 
         expect(transaction.type.valueOf()).to.be.equal(TransactionType.TRANSFER.valueOf());
         expect(((transaction as TransferTransaction).recipientAddress as Address).plain()).to.be.equal(
@@ -263,7 +264,7 @@ describe('TransactionHttp', () => {
         expect(transaction.transactionInfo?.id).to.be.equal('id');
         expect(transaction.transactionInfo?.hash).to.be.equal('hash');
 
-        transaction = await transactionHttp.getTransaction(generationHash, TransactionGroup.Unconfirmed).toPromise();
+        transaction = await lastValueFrom(transactionHttp.getTransaction(generationHash, TransactionGroup.Unconfirmed));
 
         expect(transaction.type.valueOf()).to.be.equal(TransactionType.TRANSFER.valueOf());
         expect(((transaction as TransferTransaction).recipientAddress as Address).plain()).to.be.equal(
@@ -298,21 +299,20 @@ describe('TransactionHttp', () => {
             Promise.resolve([transactionInfoDto]),
         );
 
-        const transactionConfirmed = await transactionHttp.getTransactionsById([generationHash], TransactionGroup.Confirmed).toPromise();
+        const transactionConfirmed = await lastValueFrom(transactionHttp.getTransactionsById([generationHash], TransactionGroup.Confirmed));
 
         when(transactionRoutesApi.getUnconfirmedTransactions(deepEqual({ transactionIds: [generationHash] }))).thenReturn(
             Promise.resolve([transactionInfoDto]),
         );
 
-        const transactionUnconfirmed = await transactionHttp
-            .getTransactionsById([generationHash], TransactionGroup.Unconfirmed)
-            .toPromise();
+        const transactionUnconfirmed = await lastValueFrom(transactionHttp
+            .getTransactionsById([generationHash], TransactionGroup.Unconfirmed));
 
         when(transactionRoutesApi.getPartialTransactions(deepEqual({ transactionIds: [generationHash] }))).thenReturn(
             Promise.resolve([transactionInfoDto]),
         );
 
-        const transactionPartial = await transactionHttp.getTransactionsById([generationHash], TransactionGroup.Partial).toPromise();
+        const transactionPartial = await lastValueFrom(transactionHttp.getTransactionsById([generationHash], TransactionGroup.Partial));
 
         expect(transactionConfirmed.length).to.be.equal(1);
         expect(transactionConfirmed[0].type.valueOf()).to.be.equal(TransactionType.TRANSFER.valueOf());
@@ -391,7 +391,7 @@ describe('TransactionHttp', () => {
         when(transactionRoutesApi.getConfirmedTransaction(generationHash)).thenReturn(Promise.resolve(transactionInfoDto));
         when(blockRoutesApi.getBlockByHeight(deepEqual(UInt64.fromUint(1).toString()))).thenReturn(Promise.resolve(blockInfoDto));
 
-        const fees = await transactionHttp.getTransactionEffectiveFee(generationHash).toPromise();
+        const fees = await lastValueFrom(transactionHttp.getTransactionEffectiveFee(generationHash));
         expect(fees).to.be.equal(480);
     });
 
@@ -408,7 +408,7 @@ describe('TransactionHttp', () => {
         const signedTx = account.sign(tx, generationHash);
 
         when(transactionRoutesApi.announceTransaction(deepEqual(signedTx))).thenReturn(Promise.resolve(response));
-        const announceResult = await transactionHttp.announce(signedTx).toPromise();
+        const announceResult = await lastValueFrom(transactionHttp.announce(signedTx));
 
         expect(announceResult.message).to.be.equal(response.message);
     });
@@ -434,7 +434,7 @@ describe('TransactionHttp', () => {
         const signedTx = account.sign(aggTx, generationHash);
 
         when(transactionRoutesApi.announcePartialTransaction(deepEqual(signedTx))).thenReturn(Promise.resolve(response));
-        const announceResult = await transactionHttp.announceAggregateBonded(signedTx).toPromise();
+        const announceResult = await lastValueFrom(transactionHttp.announceAggregateBonded(signedTx));
 
         expect(announceResult.message).to.be.equal(response.message);
     });
@@ -445,16 +445,15 @@ describe('TransactionHttp', () => {
         const cosignTx = new CosignatureSignedTransaction('parentHash', 'signature', 'signerPubKey');
 
         when(transactionRoutesApi.announceCosignatureTransaction(deepEqual(cosignature))).thenReturn(Promise.resolve(response));
-        const announceResult = await transactionHttp.announceAggregateBondedCosignature(cosignTx).toPromise();
+        const announceResult = await lastValueFrom(transactionHttp.announceAggregateBondedCosignature(cosignTx));
 
         expect(announceResult.message).to.be.equal(response.message);
     });
 
     it('getTransaction - Error', async () => {
         when(transactionRoutesApi.getConfirmedTransaction(generationHash)).thenReject(new Error('Mocked Error'));
-        await transactionHttp
-            .getTransaction(generationHash, TransactionGroup.Confirmed)
-            .toPromise()
+        await lastValueFrom(transactionHttp
+            .getTransaction(generationHash, TransactionGroup.Confirmed))
             .catch((error) => expect(error).not.to.be.undefined);
     });
 
@@ -462,18 +461,16 @@ describe('TransactionHttp', () => {
         when(transactionRoutesApi.getConfirmedTransactions(deepEqual({ transactionIds: [generationHash] }))).thenReject(
             new Error('Mocked Error'),
         );
-        await transactionHttp
-            .getTransactionsById([generationHash], TransactionGroup.Confirmed)
-            .toPromise()
+        await lastValueFrom(transactionHttp
+            .getTransactionsById([generationHash], TransactionGroup.Confirmed))
             .catch((error) => expect(error).not.to.be.undefined);
     });
 
     it('announceAggregateBonded - Error', async () => {
         const cosignTx = new CosignatureSignedTransaction('parentHash', 'signature', 'signerPubKey');
         when(transactionRoutesApi.announceCosignatureTransaction(deepEqual(cosignature))).thenReject(new Error('Mocked Error'));
-        await transactionHttp
-            .announceAggregateBondedCosignature(cosignTx)
-            .toPromise()
+        await lastValueFrom(transactionHttp
+            .announceAggregateBondedCosignature(cosignTx))
             .catch((error) => expect(error).not.to.be.undefined);
     });
 
@@ -481,25 +478,22 @@ describe('TransactionHttp', () => {
         const cosignTx = new CosignatureSignedTransaction('parentHash', 'signature', 'signerPubKey');
 
         when(transactionRoutesApi.announceCosignatureTransaction(deepEqual(cosignature))).thenReject(new Error('Mocked Error'));
-        await transactionHttp
-            .announceAggregateBondedCosignature(cosignTx)
-            .toPromise()
+        await lastValueFrom(transactionHttp
+            .announceAggregateBondedCosignature(cosignTx))
             .catch((error) => expect(error).not.to.be.undefined);
     });
 
     it('Test getEffectiveFees method', async () => {
         when(transactionRoutesApi.getConfirmedTransaction(generationHash)).thenReject(new Error('Mocked Error'));
-        await transactionHttp
-            .getTransactionEffectiveFee(generationHash)
-            .toPromise()
+        await lastValueFrom(transactionHttp
+            .getTransactionEffectiveFee(generationHash))
             .catch((error) => expect(error).not.to.be.undefined);
     });
 
     it('getEffectiveFees - Error', async () => {
         when(blockRoutesApi.getBlockByHeight(deepEqual(UInt64.fromUint(1).toString()))).thenReject(new Error('Mocked Error'));
-        await transactionHttp
-            .getTransactionEffectiveFee(generationHash)
-            .toPromise()
+        await lastValueFrom(transactionHttp
+            .getTransactionEffectiveFee(generationHash))
             .catch((error) => expect(error).not.to.be.undefined);
     });
 
@@ -515,9 +509,8 @@ describe('TransactionHttp', () => {
         const signedTx = account.sign(tx, generationHash);
 
         when(transactionRoutesApi.announceTransaction(deepEqual(signedTx))).thenReject(new Error('Mocked Error'));
-        await transactionHttp
-            .announce(signedTx)
-            .toPromise()
+        await lastValueFrom(transactionHttp
+            .announce(signedTx))
             .catch((error) => expect(error).not.to.be.undefined);
     });
 
@@ -542,7 +535,7 @@ describe('TransactionHttp', () => {
 
         when(transactionRoutesApi.announceTransaction(deepEqual(signedTx))).thenReturn(Promise.resolve(response));
         try {
-            await transactionHttp.announce(signedTx).toPromise();
+            await lastValueFrom(transactionHttp.announce(signedTx));
         } catch (error) {
             expect(error).not.to.be.undefined;
         }

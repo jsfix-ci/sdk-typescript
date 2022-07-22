@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { forkJoin, Observable } from 'rxjs';
+import { lastValueFrom, forkJoin, Observable } from 'rxjs';
 import { flatMap, map } from 'rxjs/internal/operators';
 import { DtoMapping } from '../core/utils/DtoMapping';
 import { RepositoryFactory } from '../infrastructure/RepositoryFactory';
@@ -64,8 +64,8 @@ export class CurrencyService implements ICurrencyService {
         // get mosaicInfo and mosaic names from the network,
         // build network currency models
         return forkJoin({
-            mosaicsInfo: mosaicHttp.getMosaics(mosaicIds).toPromise(),
-            mosaicNames: namespaceHttp.getMosaicsNames(mosaicIds).toPromise(),
+            mosaicsInfo: lastValueFrom(mosaicHttp.getMosaics(mosaicIds)),
+            mosaicNames: lastValueFrom(namespaceHttp.getMosaicsNames(mosaicIds)),
         }).pipe(
             map(({ mosaicsInfo, mosaicNames }) =>
                 mosaicsInfo.map((mosaicInfo) => {

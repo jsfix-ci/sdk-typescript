@@ -1,3 +1,4 @@
+import { lastValueFrom } from 'rxjs';
 /*
  * Copyright 2020 NEM
  *
@@ -73,7 +74,7 @@ describe('AccountService', () => {
      */
     describe('call accountInfoWithResolvedMosaic', () => {
         it('accountInfoWithResolvedMosaic', async () => {
-            const info = await accountService.accountInfoWithResolvedMosaic([account.address]).toPromise();
+            const info = await lastValueFrom(accountService.accountInfoWithResolvedMosaic([account.address]));
             expect(info).to.not.be.undefined;
             expect(info[0].resolvedMosaics).to.not.be.undefined;
             expect(info[0].resolvedMosaics?.length).to.be.greaterThan(0);
@@ -82,7 +83,7 @@ describe('AccountService', () => {
 
     describe('call accountNamespacesWithName', () => {
         it('accountNamespacesWithName', async () => {
-            const info = await accountService.accountNamespacesWithName(account.address).toPromise();
+            const info = await lastValueFrom(accountService.accountNamespacesWithName(account.address));
             expect(info).to.not.be.undefined;
             expect(info.find((i) => i.id.equals(namespaceId))).to.not.be.undefined;
             expect(info.find((i) => i.id.equals(namespaceId))?.namespaceName).to.be.equal(name);

@@ -1,3 +1,4 @@
+import { lastValueFrom } from 'rxjs';
 /*
  * Copyright 2019 NEM
  *
@@ -34,7 +35,7 @@ describe('NodeHttp', () => {
 
     describe('getNodeInfo', () => {
         it('should return node info FER', async () => {
-            const nodeInfo = await nodeRepository.getNodeInfo().toPromise();
+            const nodeInfo = await lastValueFrom(nodeRepository.getNodeInfo());
             expect(nodeInfo.friendlyName).not.to.be.undefined;
             expect(nodeInfo.host).not.to.be.undefined;
             expect(nodeInfo.networkIdentifier).not.to.be.undefined;
@@ -48,7 +49,7 @@ describe('NodeHttp', () => {
 
     describe('getNodePeers', () => {
         it('should return node peers', async () => {
-            const nodeInfo = await nodeRepository.getNodePeers().toPromise();
+            const nodeInfo = await lastValueFrom(nodeRepository.getNodePeers());
             expect(nodeInfo[0].friendlyName).not.to.be.undefined;
             expect(nodeInfo[0].host).not.to.be.undefined;
             expect(nodeInfo[0].networkIdentifier).not.to.be.undefined;
@@ -61,7 +62,7 @@ describe('NodeHttp', () => {
 
     describe('getNodeTime', () => {
         it('should return node time', async () => {
-            const nodeTime = await nodeRepository.getNodeTime().toPromise();
+            const nodeTime = await lastValueFrom(nodeRepository.getNodeTime());
             expect(nodeTime.receiveTimeStamp).not.to.be.undefined;
             expect(nodeTime.sendTimeStamp).not.to.be.undefined;
         });
@@ -69,7 +70,7 @@ describe('NodeHttp', () => {
 
     describe('getStorageInfo', () => {
         it('should return storage info', async () => {
-            const blockchainStorageInfo = await nodeRepository.getStorageInfo().toPromise();
+            const blockchainStorageInfo = await lastValueFrom(nodeRepository.getStorageInfo());
             expect(blockchainStorageInfo.numBlocks).to.be.greaterThan(0);
             expect(blockchainStorageInfo.numTransactions).to.be.greaterThan(0);
             expect(blockchainStorageInfo.numAccounts).to.be.greaterThan(0);
@@ -78,7 +79,7 @@ describe('NodeHttp', () => {
 
     describe('getServerInfo', () => {
         it('should return server info', async () => {
-            const serverInfo = await nodeRepository.getServerInfo().toPromise();
+            const serverInfo = await lastValueFrom(nodeRepository.getServerInfo());
             expect(serverInfo.restVersion).not.to.be.null;
             expect(serverInfo.sdkVersion).not.to.be.null;
         });
@@ -86,7 +87,7 @@ describe('NodeHttp', () => {
 
     describe('getNodeHealth', () => {
         it('should return node health', async () => {
-            const health = await nodeRepository.getNodeHealth().toPromise();
+            const health = await lastValueFrom(nodeRepository.getNodeHealth());
             expect(health.apiNode).not.to.be.null;
             expect(health.db).not.to.be.null;
         });
@@ -94,7 +95,7 @@ describe('NodeHttp', () => {
 
     describe('getUnlockedAccount', () => {
         it('should return unlocked account', async () => {
-            const unlockedAccount = await nodeRepository.getUnlockedAccount().toPromise();
+            const unlockedAccount = await lastValueFrom(nodeRepository.getUnlockedAccount());
             expect(unlockedAccount).not.to.be.null;
             expect(unlockedAccount.length).greaterThan(0);
         });

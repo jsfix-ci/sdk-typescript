@@ -1,3 +1,4 @@
+import { lastValueFrom } from 'rxjs';
 /*
  * Copyright 2019 NEM
  *
@@ -84,9 +85,9 @@ export class IntegrationTestHelper {
             this.repositoryFactory.createReceiptRepository(),
         );
 
-        this.networkType = await this.repositoryFactory.getNetworkType().toPromise();
-        this.generationHash = await this.repositoryFactory.getGenerationHash().toPromise();
-        this.epochAdjustment = await this.repositoryFactory.getEpochAdjustment().toPromise();
+        this.networkType = await lastValueFrom(this.repositoryFactory.getNetworkType());
+        this.generationHash = await lastValueFrom(this.repositoryFactory.getGenerationHash());
+        this.epochAdjustment = await lastValueFrom(this.repositoryFactory.getEpochAdjustment());
 
         let index = 0;
         this.accounts = accounts.map((account) => Account.createFromPrivateKey(account, this.networkType));
@@ -104,7 +105,7 @@ export class IntegrationTestHelper {
 
         // What would be the best maxFee? In the future we will load the fee multiplier from rest.
         this.maxFee = UInt64.fromUint(1000000);
-        this.networkCurrency = (await this.repositoryFactory.getCurrencies().toPromise()).currency;
+        this.networkCurrency = (await lastValueFrom(this.repositoryFactory.getCurrencies())).currency;
 
         if (openListener) {
             await this.listener.open();
@@ -118,15 +119,13 @@ export class IntegrationTestHelper {
 
     announce(signedTransaction: SignedTransaction): Promise<Transaction> {
         console.log(`Announcing transaction: ${signedTransaction.type}`);
-        return this.transactionService
+        return lastValueFrom(this.transactionService
             .announce(signedTransaction, this.listener)
             .pipe(
                 map((t) => {
                     console.log(`Transaction ${signedTransaction.type} confirmed`);
                     return t;
-                }),
-            )
-            .toPromise();
+                })));
     }
 
     public static sleep(ms: number): Promise<any> {

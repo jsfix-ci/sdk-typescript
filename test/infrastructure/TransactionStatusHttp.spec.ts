@@ -1,3 +1,4 @@
+import { lastValueFrom } from 'rxjs';
 /*
  * Copyright 2018 NEM
  *
@@ -47,7 +48,7 @@ describe('TransactionStatusHttp', () => {
 
         when(transactionStatusRoutesApi.getTransactionStatus(deepEqual(hash))).thenReturn(Promise.resolve(transactionStatusDTO));
 
-        const transactionStatus = await transactionStatusHttp.getTransactionStatus(hash).toPromise();
+        const transactionStatus = await lastValueFrom(transactionStatusHttp.getTransactionStatus(hash));
 
         expect(transactionStatus.deadline.toString()).to.be.equal('1234');
         expect(transactionStatus.hash).to.be.equal(hash);
@@ -67,7 +68,7 @@ describe('TransactionStatusHttp', () => {
             Promise.resolve([transactionStatusDTO]),
         );
 
-        const transactionStatuses = await transactionStatusHttp.getTransactionStatuses([hash]).toPromise();
+        const transactionStatuses = await lastValueFrom(transactionStatusHttp.getTransactionStatuses([hash]));
         expect(transactionStatuses.length).to.be.equal(1);
         const transactionStatus = transactionStatuses[0];
 
@@ -79,17 +80,15 @@ describe('TransactionStatusHttp', () => {
 
     it('getTransactionStatus - Error', async () => {
         when(transactionStatusRoutesApi.getTransactionStatus('abc')).thenReject(new Error('Mocked Error'));
-        await transactionStatusHttp
-            .getTransactionStatus('abc')
-            .toPromise()
+        await lastValueFrom(transactionStatusHttp
+            .getTransactionStatus('abc'))
             .catch((error) => expect(error).not.to.be.undefined);
     });
 
     it('getTransactionStatuss - Error', async () => {
         when(transactionStatusRoutesApi.getTransactionStatuses(deepEqual({ hashes: ['abc'] }))).thenReject(new Error('Mocked Error'));
-        await transactionStatusHttp
-            .getTransactionStatuses(['abc'])
-            .toPromise()
+        await lastValueFrom(transactionStatusHttp
+            .getTransactionStatuses(['abc']))
             .catch((error) => expect(error).not.to.be.undefined);
     });
 });

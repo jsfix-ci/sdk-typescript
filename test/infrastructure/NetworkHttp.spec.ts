@@ -1,3 +1,4 @@
+import { lastValueFrom } from 'rxjs';
 /*
  * Copyright 2020 NEM
  *
@@ -60,7 +61,7 @@ describe('NetworkHttp', () => {
 
         when(networkRoutesApi.getTransactionFees()).thenReturn(Promise.resolve(body));
 
-        const networkFees = await networkRepository.getTransactionFees().toPromise();
+        const networkFees = await lastValueFrom(networkRepository.getTransactionFees());
         expect(networkFees).to.be.not.null;
         expect(networkFees.averageFeeMultiplier).to.be.equals(1);
         expect(networkFees.highestFeeMultiplier).to.be.equals(2);
@@ -78,7 +79,7 @@ describe('NetworkHttp', () => {
 
         when(networkRoutesApi.getRentalFees()).thenReturn(Promise.resolve(body));
 
-        const rentalFees = await networkRepository.getRentalFees().toPromise();
+        const rentalFees = await lastValueFrom(networkRepository.getRentalFees());
         expect(rentalFees).to.be.not.null;
         expect(rentalFees.effectiveChildNamespaceRentalFee.toString()).to.be.equals('1');
         expect(rentalFees.effectiveMosaicRentalFee.toString()).to.be.equals('2');
@@ -99,7 +100,7 @@ describe('NetworkHttp', () => {
 
         when(nodeRoutesApi.getNodeInfo()).thenReturn(Promise.resolve(body));
 
-        const networkType = await networkRepository.getNetworkType().toPromise();
+        const networkType = await lastValueFrom(networkRepository.getNetworkType());
         expect(networkType).to.be.equals(NetworkType.PRIVATE_TEST);
     });
 
@@ -111,7 +112,7 @@ describe('NetworkHttp', () => {
 
         when(networkRoutesApi.getNetworkType()).thenReturn(Promise.resolve(body));
 
-        const networkName = await networkRepository.getNetworkName().toPromise();
+        const networkName = await lastValueFrom(networkRepository.getNetworkName());
         expect(networkName.description).to.be.equals(body.description);
         expect(networkName.name).to.be.equals(body.name);
     });
@@ -216,7 +217,7 @@ describe('NetworkHttp', () => {
 
         when(networkRoutesApi.getNetworkProperties()).thenReturn(Promise.resolve(body));
 
-        const networkProperties = await networkRepository.getNetworkProperties().toPromise();
+        const networkProperties = await lastValueFrom(networkRepository.getNetworkProperties());
         deepEqual(networkProperties.network, body.network);
         deepEqual(networkProperties.chain, body.chain);
         deepEqual(networkProperties.plugins, body.plugins);
@@ -225,7 +226,7 @@ describe('NetworkHttp', () => {
     it('getNetworkProperties - using rest json payload', async () => {
         const body = testResources.getDummyNetworkProperties();
         when(networkRoutesApi.getNetworkProperties()).thenReturn(Promise.resolve(body));
-        const networkProperties = await networkRepository.getNetworkProperties().toPromise();
+        const networkProperties = await lastValueFrom(networkRepository.getNetworkProperties());
         deepEqual(networkProperties.network, body.network);
         deepEqual(networkProperties.chain, body.chain);
         deepEqual(networkProperties.plugins, body.plugins);

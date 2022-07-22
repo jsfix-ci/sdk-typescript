@@ -1,3 +1,4 @@
+import { lastValueFrom } from 'rxjs';
 /*
  * Copyright 2020 NEM
  *
@@ -46,7 +47,7 @@ describe('ChainHttp', () => {
         finalizedBlockDto.height = '1';
         chainInfoDTO.latestFinalizedBlock = finalizedBlockDto;
         when(chainRoutesApi.getChainInfo()).thenReturn(Promise.resolve(chainInfoDTO));
-        const info = await chainRepository.getChainInfo().toPromise();
+        const info = await lastValueFrom(chainRepository.getChainInfo());
         expect(info).to.be.not.null;
         expect(info.height.toString()).to.be.equals(chainInfoDTO.height);
         expect(info.scoreLow.toString()).to.be.equals(chainInfoDTO.scoreLow);

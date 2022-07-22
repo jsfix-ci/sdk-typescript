@@ -1,3 +1,4 @@
+import { lastValueFrom } from 'rxjs';
 /*
  * Copyright 2020 NEM
  *
@@ -40,16 +41,14 @@ describe('TransactionSearch', () => {
         it('should return transaction info given address', async () => {
             const transactionRepository = helper.repositoryFactory.createTransactionRepository();
             const account = helper.account;
-            const transactions = await transactionRepository
-                .search({ group: TransactionGroup.Confirmed, address: account.address } as TransactionSearchCriteria)
-                .toPromise();
+            const transactions = await lastValueFrom(transactionRepository
+                .search({ group: TransactionGroup.Confirmed, address: account.address } as TransactionSearchCriteria));
             expect(transactions.data.length).to.be.greaterThan(0);
         });
         it('should return transaction info given height all types', async () => {
             const transactionRepository = helper.repositoryFactory.createTransactionRepository();
-            const transactions = await transactionRepository
-                .search({ group: TransactionGroup.Confirmed, height: UInt64.fromUint(1) } as TransactionSearchCriteria)
-                .toPromise();
+            const transactions = await lastValueFrom(transactionRepository
+                .search({ group: TransactionGroup.Confirmed, height: UInt64.fromUint(1) } as TransactionSearchCriteria));
 
             const mosaicDefinitions = transactions.data.filter((t) => t.type == TransactionType.MOSAIC_DEFINITION).length;
             const namespaceRegistration = transactions.data.filter((t) => t.type == TransactionType.NAMESPACE_REGISTRATION).length;
@@ -63,13 +62,12 @@ describe('TransactionSearch', () => {
 
         it('should return transaction info given height and namesapce, mosaic types', async () => {
             const transactionRepository = helper.repositoryFactory.createTransactionRepository();
-            const transactions = await transactionRepository
+            const transactions = await lastValueFrom(transactionRepository
                 .search({
                     group: TransactionGroup.Confirmed,
                     height: UInt64.fromUint(1),
                     type: [TransactionType.MOSAIC_DEFINITION, TransactionType.NAMESPACE_REGISTRATION],
-                } as TransactionSearchCriteria)
-                .toPromise();
+                } as TransactionSearchCriteria));
             const mosaicDefinitions = transactions.data.filter((t) => t.type == TransactionType.MOSAIC_DEFINITION).length;
             const namespaceRegistration = transactions.data.filter((t) => t.type == TransactionType.NAMESPACE_REGISTRATION).length;
             const others = transactions.data.filter(
@@ -86,13 +84,11 @@ describe('TransactionSearch', () => {
             const transactionRepository = helper.repositoryFactory.createTransactionRepository();
             const streamer = new TransactionPaginationStreamer(transactionRepository);
             const account = helper.account;
-            const transactionsNoStreamer = await transactionRepository
-                .search({ group: TransactionGroup.Confirmed, address: account.address, pageSize: 10 } as TransactionSearchCriteria)
-                .toPromise();
-            const transactions = await streamer
+            const transactionsNoStreamer = await lastValueFrom(transactionRepository
+                .search({ group: TransactionGroup.Confirmed, address: account.address, pageSize: 10 } as TransactionSearchCriteria));
+            const transactions = await lastValueFrom(streamer
                 .search({ group: TransactionGroup.Confirmed, address: account.address, pageSize: 10 })
-                .pipe(take(10), toArray())
-                .toPromise();
+                .pipe(take(10), toArray()));
             expect(transactions.length).to.be.greaterThan(0);
             deepEqual(transactionsNoStreamer.data, transactions);
         });
@@ -101,14 +97,13 @@ describe('TransactionSearch', () => {
             const transactionRepository = helper.repositoryFactory.createTransactionRepository();
             const streamer = new TransactionPaginationStreamer(transactionRepository);
 
-            const transferTransaction = (await streamer
+            const transferTransaction = (await lastValueFrom(streamer
                 .search({
                     embedded: true,
                     group: TransactionGroup.Confirmed,
                     type: [TransactionType.TRANSFER],
                 })
-                .pipe(first())
-                .toPromise()) as TransferTransaction;
+                .pipe(first()))) as TransferTransaction;
             const mosaicId = transferTransaction.mosaics[0].id;
 
             const criteria: TransactionSearchCriteria = {
@@ -118,7 +113,7 @@ describe('TransactionSearch', () => {
                 transferMosaicId: mosaicId as MosaicId,
             };
 
-            const transactions = await streamer.search(criteria).pipe(toArray()).toPromise();
+            const transactions = await lastValueFrom(streamer.search(criteria).pipe(toArray()));
             expect(transactions.length).to.be.greaterThan(0);
 
             transactions.forEach((t) => {
@@ -131,14 +126,13 @@ describe('TransactionSearch', () => {
             const transactionRepository = helper.repositoryFactory.createTransactionRepository();
             const streamer = new TransactionPaginationStreamer(transactionRepository);
 
-            const transferTransaction = (await streamer
+            const transferTransaction = (await lastValueFrom(streamer
                 .search({
                     embedded: true,
                     group: TransactionGroup.Confirmed,
                     type: [TransactionType.TRANSFER],
                 })
-                .pipe(first())
-                .toPromise()) as TransferTransaction;
+                .pipe(first()))) as TransferTransaction;
             const mosaic = transferTransaction.mosaics[0];
             const mosaicId = mosaic.id;
 
@@ -151,7 +145,7 @@ describe('TransactionSearch', () => {
                 transferMosaicId: mosaicId as MosaicId,
             };
 
-            const transactions = await streamer.search(criteria).pipe(toArray()).toPromise();
+            const transactions = await lastValueFrom(streamer.search(criteria).pipe(toArray()));
             expect(transactions.length).to.be.greaterThan(0);
 
             transactions.forEach((t) => {
@@ -165,14 +159,13 @@ describe('TransactionSearch', () => {
             const transactionRepository = helper.repositoryFactory.createTransactionRepository();
             const streamer = new TransactionPaginationStreamer(transactionRepository);
 
-            const transferTransaction = (await streamer
+            const transferTransaction = (await lastValueFrom(streamer
                 .search({
                     embedded: true,
                     group: TransactionGroup.Confirmed,
                     type: [TransactionType.TRANSFER],
                 })
-                .pipe(first())
-                .toPromise()) as TransferTransaction;
+                .pipe(first()))) as TransferTransaction;
             const mosaic = transferTransaction.mosaics[0];
             const mosaicId = mosaic.id;
 
@@ -184,7 +177,7 @@ describe('TransactionSearch', () => {
                 transferMosaicId: mosaicId as MosaicId,
             };
 
-            const transactions = await streamer.search(criteria).pipe(toArray()).toPromise();
+            const transactions = await lastValueFrom(streamer.search(criteria).pipe(toArray()));
             expect(transactions.length).to.be.greaterThan(0);
 
             transactions.forEach((t) => {
@@ -198,14 +191,13 @@ describe('TransactionSearch', () => {
             const transactionRepository = helper.repositoryFactory.createTransactionRepository();
             const streamer = new TransactionPaginationStreamer(transactionRepository);
 
-            const transferTransaction = (await streamer
+            const transferTransaction = (await lastValueFrom(streamer
                 .search({
                     embedded: true,
                     group: TransactionGroup.Confirmed,
                     type: [TransactionType.TRANSFER],
                 })
-                .pipe(first())
-                .toPromise()) as TransferTransaction;
+                .pipe(first()))) as TransferTransaction;
             const mosaic = transferTransaction.mosaics[0];
             const mosaicId = mosaic.id;
 
@@ -217,7 +209,7 @@ describe('TransactionSearch', () => {
                 transferMosaicId: mosaicId as MosaicId,
             };
 
-            const transactions = await streamer.search(criteria).pipe(toArray()).toPromise();
+            const transactions = await lastValueFrom(streamer.search(criteria).pipe(toArray()));
             expect(transactions.length).to.be.greaterThan(0);
 
             transactions.forEach((t) => {

@@ -1,3 +1,4 @@
+import { lastValueFrom } from 'rxjs';
 import { expect } from 'chai';
 import { Convert } from '../../src/core/format';
 import { MetadataRepository } from '../../src/infrastructure/MetadataRepository';
@@ -146,7 +147,7 @@ describe('MetadataTransactionService', () => {
             const metaDataService = new MetadataTransactionService(metadataRepository);
 
             const deadline = Deadline.create(helper.epochAdjustment);
-            const transaction = await metaDataService
+            const transaction = await lastValueFrom(metaDataService
                 .createAccountMetadataTransaction(
                     deadline,
                     networkType,
@@ -154,9 +155,7 @@ describe('MetadataTransactionService', () => {
                     key,
                     newValue,
                     targetAccount.address,
-                    helper.maxFee,
-                )
-                .toPromise();
+                    helper.maxFee));
 
             expect(transaction.type).to.be.equal(TransactionType.ACCOUNT_METADATA);
             expect(transaction.scopedMetadataKey.toHex()).to.be.equal(key.toHex());
@@ -168,7 +167,7 @@ describe('MetadataTransactionService', () => {
             const metaDataService = new MetadataTransactionService(metadataRepository);
             const updateValue = newValue + 'delta';
             const deadline = Deadline.create(helper.epochAdjustment);
-            const transaction = await metaDataService
+            const transaction = await lastValueFrom(metaDataService
                 .createMosaicMetadataTransaction(
                     deadline,
                     networkType,
@@ -177,9 +176,7 @@ describe('MetadataTransactionService', () => {
                     key,
                     updateValue,
                     targetAccount.address,
-                    helper.maxFee,
-                )
-                .toPromise();
+                    helper.maxFee));
             expect(transaction.type).to.be.equal(TransactionType.MOSAIC_METADATA);
             expect(transaction.scopedMetadataKey.toHex()).to.be.equal(key.toHex());
             expect(transaction.valueSizeDelta).to.be.equal(5);
@@ -196,7 +193,7 @@ describe('MetadataTransactionService', () => {
 
             const deadline = Deadline.create(helper.epochAdjustment);
             const updateValue = newValue + 'delta';
-            const transaction = await metaDataService
+            const transaction = await lastValueFrom(metaDataService
                 .createNamespaceMetadataTransaction(
                     deadline,
                     networkType,
@@ -205,9 +202,7 @@ describe('MetadataTransactionService', () => {
                     key,
                     updateValue,
                     targetAccount.address,
-                    helper.maxFee,
-                )
-                .toPromise();
+                    helper.maxFee));
 
             expect(transaction.type).to.be.equal(TransactionType.NAMESPACE_METADATA);
             expect(transaction.scopedMetadataKey.toHex()).to.be.equal(key.toHex());
@@ -224,7 +219,7 @@ describe('MetadataTransactionService', () => {
         it('should create MosaicMetadataTransaction and announce', async () => {
             const deadline = Deadline.create(helper.epochAdjustment);
             const metaDataService = new MetadataTransactionService(metadataRepository);
-            const transaction = await metaDataService
+            const transaction = await lastValueFrom(metaDataService
                 .createMosaicMetadataTransaction(
                     deadline,
                     networkType,
@@ -233,9 +228,7 @@ describe('MetadataTransactionService', () => {
                     key,
                     newValue + 'delta',
                     targetAccount.address,
-                    helper.maxFee,
-                )
-                .toPromise();
+                    helper.maxFee));
             const aggregateTransaction = AggregateTransaction.createComplete(
                 Deadline.create(helper.epochAdjustment),
                 [transaction.toAggregate(targetAccount.publicAccount)],
@@ -253,7 +246,7 @@ describe('MetadataTransactionService', () => {
             await new Promise((resolve) => setTimeout(resolve, 3000));
             const deadline = Deadline.create(helper.epochAdjustment);
             const metaDataService = new MetadataTransactionService(metadataRepository);
-            const transaction = await metaDataService
+            const transaction = await lastValueFrom(metaDataService
                 .createMosaicMetadataTransaction(
                     deadline,
                     networkType,
@@ -262,9 +255,7 @@ describe('MetadataTransactionService', () => {
                     key,
                     newValue + 'delta' + 'extra delta',
                     targetAccount.address,
-                    helper.maxFee,
-                )
-                .toPromise();
+                    helper.maxFee));
             const aggregateTransaction = AggregateTransaction.createComplete(
                 Deadline.create(helper.epochAdjustment),
                 [transaction.toAggregate(targetAccount.publicAccount)],
@@ -282,7 +273,7 @@ describe('MetadataTransactionService', () => {
             await new Promise((resolve) => setTimeout(resolve, 3000));
             const deadline = Deadline.create(helper.epochAdjustment);
             const metaDataService = new MetadataTransactionService(metadataRepository);
-            const transaction = await metaDataService
+            const transaction = await lastValueFrom(metaDataService
                 .createMosaicMetadataTransaction(
                     deadline,
                     networkType,
@@ -291,9 +282,7 @@ describe('MetadataTransactionService', () => {
                     key,
                     newValue,
                     targetAccount.address,
-                    helper.maxFee,
-                )
-                .toPromise();
+                    helper.maxFee));
             const aggregateTransaction = AggregateTransaction.createComplete(
                 Deadline.create(helper.epochAdjustment),
                 [transaction.toAggregate(targetAccount.publicAccount)],

@@ -1,3 +1,4 @@
+import { lastValueFrom } from 'rxjs';
 /*
  * Copyright 2018 NEM
  *
@@ -61,7 +62,7 @@ describe('PersistentHarvesting', () => {
 
     describe('AccountKeyLinkTransaction', () => {
         it('standalone', async () => {
-            const accountInfo = await helper.repositoryFactory.createAccountRepository().getAccountInfo(account.address).toPromise();
+            const accountInfo = await lastValueFrom(helper.repositoryFactory.createAccountRepository().getAccountInfo(account.address));
             const publicKey = accountInfo.supplementalPublicKeys?.linked?.publicKey;
             if (publicKey) {
                 if (publicKey == remoteAccount.publicKey) {
@@ -85,7 +86,7 @@ describe('PersistentHarvesting', () => {
 
     describe('VrfKeyLinkTransaction', () => {
         it('standalone', async () => {
-            const accountInfo = await helper.repositoryFactory.createAccountRepository().getAccountInfo(account.address).toPromise();
+            const accountInfo = await lastValueFrom(helper.repositoryFactory.createAccountRepository().getAccountInfo(account.address));
 
             const publicKey = accountInfo.supplementalPublicKeys?.vrf?.publicKey;
             if (publicKey) {
@@ -112,7 +113,7 @@ describe('PersistentHarvesting', () => {
         it('standalone', async () => {
             const nodePublicKey = helper.bootstrapAddresses.nodes![0].transport!.publicKey;
 
-            const accountInfo = await helper.repositoryFactory.createAccountRepository().getAccountInfo(account.address).toPromise();
+            const accountInfo = await lastValueFrom(helper.repositoryFactory.createAccountRepository().getAccountInfo(account.address));
 
             const publicKey = accountInfo.supplementalPublicKeys?.node?.publicKey;
             if (publicKey) {

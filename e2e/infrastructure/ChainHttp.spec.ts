@@ -1,3 +1,4 @@
+import { lastValueFrom } from 'rxjs';
 /*
  * Copyright 2019 NEM
  *
@@ -34,7 +35,7 @@ describe('ChainHttp', () => {
 
     describe('getChainInfo', () => {
         it('should return blockchain score', async () => {
-            const info = await chainRepository.getChainInfo().toPromise();
+            const info = await lastValueFrom(chainRepository.getChainInfo());
             expect(info.scoreLow).to.not.be.equal(undefined);
             expect(info.scoreHigh.lower).to.be.equal(0);
             expect(info.scoreHigh.higher).to.be.equal(0);

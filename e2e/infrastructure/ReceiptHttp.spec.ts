@@ -1,3 +1,4 @@
+import { lastValueFrom } from 'rxjs';
 /*
  * Copyright 2018 NEM
  *
@@ -39,10 +40,9 @@ describe('ReceiptHttp', () => {
         async function searchByRecipientType(receiptTypes: ReceiptType[], empty: boolean): Promise<void> {
             const streamer = ReceiptPaginationStreamer.transactionStatements(receiptRepository);
 
-            const infos = await streamer
+            const infos = await lastValueFrom(streamer
                 .search({ pageSize: 20, height: UInt64.fromUint(1), receiptTypes: receiptTypes })
-                .pipe(toArray())
-                .toPromise();
+                .pipe(toArray()));
 
             infos.forEach((s) => {
                 s.receipts.forEach((r) => {

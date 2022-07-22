@@ -1,3 +1,4 @@
+import { lastValueFrom } from 'rxjs';
 /*
  * Copyright 2019 NEM
  *
@@ -59,10 +60,10 @@ describe('MetadataHttp', () => {
     });
 
     const validateMerkle = async (info: Metadata): Promise<void> => {
-        const infoFromId = await metadataRepository.getMetadata(info.metadataEntry.compositeHash).toPromise();
+        const infoFromId = await lastValueFrom(metadataRepository.getMetadata(info.metadataEntry.compositeHash));
         expect(infoFromId).to.be.equal(info);
 
-        const merkleInfo = await metadataRepository.getMetadataMerkle(info.metadataEntry.compositeHash).toPromise();
+        const merkleInfo = await lastValueFrom(metadataRepository.getMetadataMerkle(info.metadataEntry.compositeHash));
         expect(merkleInfo.raw).to.not.be.undefined;
     };
 
@@ -189,9 +190,8 @@ describe('MetadataHttp', () => {
 
     describe('getAccountMetadata', () => {
         it('should return metadata given a NEM Address', async () => {
-            const metadata = await metadataRepository
-                .search({ targetAddress: accountAddress, metadataType: MetadataType.Account, order: Order.Desc })
-                .toPromise();
+            const metadata = await lastValueFrom(metadataRepository
+                .search({ targetAddress: accountAddress, metadataType: MetadataType.Account, order: Order.Desc }));
             expect(metadata.data.length).to.be.greaterThan(0);
             const info = metadata.data[0];
             expect(info.metadataEntry.scopedMetadataKey.toString()).to.be.equal('6');
@@ -206,14 +206,13 @@ describe('MetadataHttp', () => {
 
     describe('getAccountMetadataByKey', () => {
         it('should return metadata given a NEM Address and metadata key', async () => {
-            const metadata = await metadataRepository
+            const metadata = await lastValueFrom(metadataRepository
                 .search({
                     targetAddress: accountAddress,
                     scopedMetadataKey: UInt64.fromUint(6).toHex(),
                     metadataType: MetadataType.Account,
                     order: Order.Desc,
-                })
-                .toPromise();
+                }));
             expect(metadata.data.length).to.be.greaterThan(0);
             const info = metadata.data[0];
             expect(info.metadataEntry.scopedMetadataKey.toString()).to.be.equal('6');
@@ -228,15 +227,14 @@ describe('MetadataHttp', () => {
 
     describe('getAccountMetadataByKeyAndSender', () => {
         it('should return metadata given a NEM Address and metadata key and sender address', async () => {
-            const metadata = await metadataRepository
+            const metadata = await lastValueFrom(metadataRepository
                 .search({
                     targetAddress: accountAddress,
                     scopedMetadataKey: UInt64.fromUint(6).toHex(),
                     sourceAddress: account.address,
                     metadataType: MetadataType.Account,
                     order: Order.Desc,
-                })
-                .toPromise();
+                }));
 
             const info = metadata.data[0];
             expect(info.metadataEntry.scopedMetadataKey.toString()).to.be.equal('6');
@@ -251,9 +249,8 @@ describe('MetadataHttp', () => {
 
     describe('getMosaicMetadata', () => {
         it('should return metadata given a mosaicId', async () => {
-            const metadata = await metadataRepository
-                .search({ targetId: mosaicId, metadataType: MetadataType.Mosaic, order: Order.Desc })
-                .toPromise();
+            const metadata = await lastValueFrom(metadataRepository
+                .search({ targetId: mosaicId, metadataType: MetadataType.Mosaic, order: Order.Desc }));
             expect(metadata.data.length).to.be.greaterThan(0);
             const info = metadata.data[0];
             expect(info.metadataEntry.scopedMetadataKey.toString()).to.be.equal('6');
@@ -268,14 +265,13 @@ describe('MetadataHttp', () => {
 
     describe('getMosaicMetadataByKey', () => {
         it('should return metadata given a mosaicId and metadata key', async () => {
-            const metadata = await metadataRepository
+            const metadata = await lastValueFrom(metadataRepository
                 .search({
                     targetId: mosaicId,
                     scopedMetadataKey: UInt64.fromUint(6).toHex(),
                     metadataType: MetadataType.Mosaic,
                     order: Order.Desc,
-                })
-                .toPromise();
+                }));
             expect(metadata.data.length).to.be.greaterThan(0);
             const info = metadata.data[0];
             expect(info.metadataEntry.scopedMetadataKey.toString()).to.be.equal('6');
@@ -290,15 +286,14 @@ describe('MetadataHttp', () => {
 
     describe('getMosaicMetadataByKeyAndSender', () => {
         it('should return metadata given a mosaicId and metadata key and sender public key', async () => {
-            const metadata = await metadataRepository
+            const metadata = await lastValueFrom(metadataRepository
                 .search({
                     targetId: mosaicId,
                     scopedMetadataKey: UInt64.fromUint(6).toHex(),
                     sourceAddress: account.address,
                     metadataType: MetadataType.Mosaic,
                     order: Order.Desc,
-                })
-                .toPromise();
+                }));
             const info = metadata.data[0];
             expect(info.metadataEntry.scopedMetadataKey.toString()).to.be.equal('6');
             expect(info.metadataEntry.sourceAddress).to.be.deep.equal(account.address);
@@ -313,9 +308,8 @@ describe('MetadataHttp', () => {
     describe('getNamespaceMetadata', () => {
         it('should return metadata given a namespaceId', async () => {
             await new Promise((resolve) => setTimeout(resolve, 3000));
-            const metadata = await metadataRepository
-                .search({ targetId: namespaceId, metadataType: MetadataType.Namespace, order: Order.Desc })
-                .toPromise();
+            const metadata = await lastValueFrom(metadataRepository
+                .search({ targetId: namespaceId, metadataType: MetadataType.Namespace, order: Order.Desc }));
             expect(metadata.data.length).to.be.greaterThan(0);
             const info = metadata.data[0];
             expect(info.metadataEntry.scopedMetadataKey.toString()).to.be.equal('6');
@@ -330,14 +324,13 @@ describe('MetadataHttp', () => {
 
     describe('getNamespaceMetadataByKey', () => {
         it('should return metadata given a namespaceId and metadata key', async () => {
-            const metadata = await metadataRepository
+            const metadata = await lastValueFrom(metadataRepository
                 .search({
                     targetId: namespaceId,
                     scopedMetadataKey: UInt64.fromUint(6).toHex(),
                     metadataType: MetadataType.Namespace,
                     order: Order.Desc,
-                })
-                .toPromise();
+                }));
             expect(metadata.data.length).to.be.greaterThan(0);
             const info = metadata.data[0];
             expect(info.metadataEntry.scopedMetadataKey.toString()).to.be.equal('6');
@@ -352,15 +345,14 @@ describe('MetadataHttp', () => {
 
     describe('getNamespaceMetadataByKeyAndSender', () => {
         it('should return metadata given a namespaceId and metadata key and sender public key', async () => {
-            const metadata = await metadataRepository
+            const metadata = await lastValueFrom(metadataRepository
                 .search({
                     targetId: namespaceId,
                     scopedMetadataKey: UInt64.fromUint(6).toHex(),
                     sourceAddress: account.address,
                     metadataType: MetadataType.Namespace,
                     order: Order.Desc,
-                })
-                .toPromise();
+                }));
             const info = metadata.data[0];
             expect(info.metadataEntry.scopedMetadataKey.toString()).to.be.equal('6');
             expect(info.metadataEntry.sourceAddress).to.be.deep.equal(account.address);
@@ -375,13 +367,11 @@ describe('MetadataHttp', () => {
     describe('getAccountMetadata with streamer', () => {
         it('should return metadata given a NEM Address', async () => {
             const streamer = new MetadataPaginationStreamer(metadataRepository);
-            const infoStreamer = await streamer
+            const infoStreamer = await lastValueFrom(streamer
                 .search({ pageSize: 20, targetAddress: accountAddress, metadataType: MetadataType.Account, order: Order.Desc })
-                .pipe(take(20), toArray())
-                .toPromise();
-            const info = await metadataRepository
-                .search({ pageSize: 20, targetAddress: accountAddress, metadataType: MetadataType.Account, order: Order.Desc })
-                .toPromise();
+                .pipe(take(20), toArray()));
+            const info = await lastValueFrom(metadataRepository
+                .search({ pageSize: 20, targetAddress: accountAddress, metadataType: MetadataType.Account, order: Order.Desc }));
             expect(infoStreamer.length).to.be.greaterThan(0);
             deepEqual(infoStreamer[0], info.data[0]);
         });

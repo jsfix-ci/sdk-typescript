@@ -1,3 +1,4 @@
+import { lastValueFrom } from 'rxjs';
 import { expect } from 'chai';
 import { KeyGenerator } from '../../src/core/format';
 import { NamespaceRepository, RestrictionMosaicRepository } from '../../src/infrastructure';
@@ -191,7 +192,7 @@ describe('MosaicRestrictionTransactionService', () => {
             const service = new MosaicRestrictionTransactionService(restrictionRepository, namespaceRepository);
             const deadline = Deadline.create(helper.epochAdjustment);
 
-            return service
+            return lastValueFrom(service
                 .createMosaicGlobalRestrictionTransaction(
                     deadline,
                     networkType,
@@ -200,9 +201,7 @@ describe('MosaicRestrictionTransactionService', () => {
                     '1',
                     MosaicRestrictionType.GE,
                     undefined,
-                    helper.maxFee,
-                )
-                .toPromise()
+                    helper.maxFee))
                 .then((transaction: MosaicGlobalRestrictionTransaction) => {
                     expect(transaction.type).to.be.equal(TransactionType.MOSAIC_GLOBAL_RESTRICTION);
                     expect(transaction.previousRestrictionValue.toString()).to.be.equal('0');
@@ -219,7 +218,7 @@ describe('MosaicRestrictionTransactionService', () => {
             await new Promise((resolve) => setTimeout(resolve, 3000));
             const deadline = Deadline.create(helper.epochAdjustment);
             const service = new MosaicRestrictionTransactionService(restrictionRepository, namespaceRepository);
-            const transaction = (await service
+            const transaction = (await lastValueFrom(service
                 .createMosaicGlobalRestrictionTransaction(
                     deadline,
                     networkType,
@@ -228,9 +227,7 @@ describe('MosaicRestrictionTransactionService', () => {
                     '2',
                     MosaicRestrictionType.GE,
                     undefined,
-                    helper.maxFee,
-                )
-                .toPromise()) as MosaicGlobalRestrictionTransaction;
+                    helper.maxFee))) as MosaicGlobalRestrictionTransaction;
             expect(transaction.type).to.be.equal(TransactionType.MOSAIC_GLOBAL_RESTRICTION);
             expect(transaction.previousRestrictionValue.toString()).to.be.equal('0');
             expect(transaction.previousRestrictionType).to.be.equal(MosaicRestrictionType.GE);
@@ -244,9 +241,8 @@ describe('MosaicRestrictionTransactionService', () => {
         it('should create MosaicAddressRestrictionTransaction', () => {
             const service = new MosaicRestrictionTransactionService(restrictionRepository, namespaceRepository);
             const deadline = Deadline.create(helper.epochAdjustment);
-            return service
-                .createMosaicAddressRestrictionTransaction(deadline, networkType, mosaicId, key, account.address, '3', helper.maxFee)
-                .toPromise()
+            return lastValueFrom(service
+                .createMosaicAddressRestrictionTransaction(deadline, networkType, mosaicId, key, account.address, '3', helper.maxFee))
                 .then((transaction: MosaicAddressRestrictionTransaction) => {
                     expect(transaction.type).to.be.equal(TransactionType.MOSAIC_ADDRESS_RESTRICTION);
                     expect(transaction.previousRestrictionValue.toString()).to.be.equal('2');
@@ -262,9 +258,8 @@ describe('MosaicRestrictionTransactionService', () => {
             const service = new MosaicRestrictionTransactionService(restrictionRepository, namespaceRepository);
 
             const deadline = Deadline.create(helper.epochAdjustment);
-            return service
-                .createMosaicAddressRestrictionTransaction(deadline, networkType, mosaicId, key, namespaceIdAddress, '4', helper.maxFee)
-                .toPromise()
+            return lastValueFrom(service
+                .createMosaicAddressRestrictionTransaction(deadline, networkType, mosaicId, key, namespaceIdAddress, '4', helper.maxFee))
                 .then((transaction: MosaicAddressRestrictionTransaction) => {
                     expect(transaction.type).to.be.equal(TransactionType.MOSAIC_ADDRESS_RESTRICTION);
                     expect(transaction.previousRestrictionValue.toString()).to.be.equal('2');
@@ -279,7 +274,7 @@ describe('MosaicRestrictionTransactionService', () => {
         it('should create MosaicGlobalRestriction and announce', () => {
             const deadline = Deadline.create(helper.epochAdjustment);
             const service = new MosaicRestrictionTransactionService(restrictionRepository, namespaceRepository);
-            return service
+            return lastValueFrom(service
                 .createMosaicGlobalRestrictionTransaction(
                     deadline,
                     networkType,
@@ -288,9 +283,7 @@ describe('MosaicRestrictionTransactionService', () => {
                     '1',
                     MosaicRestrictionType.GE,
                     undefined,
-                    helper.maxFee,
-                )
-                .toPromise()
+                    helper.maxFee))
                 .then((transaction: MosaicGlobalRestrictionTransaction) => {
                     const aggregateTransaction = AggregateTransaction.createComplete(
                         Deadline.create(helper.epochAdjustment),
@@ -309,9 +302,8 @@ describe('MosaicRestrictionTransactionService', () => {
         it('should create MosaicAddressRestriction and announce', () => {
             const deadline = Deadline.create(helper.epochAdjustment);
             const service = new MosaicRestrictionTransactionService(restrictionRepository, namespaceRepository);
-            return service
-                .createMosaicAddressRestrictionTransaction(deadline, networkType, mosaicId, key, account.address, '3', helper.maxFee)
-                .toPromise()
+            return lastValueFrom(service
+                .createMosaicAddressRestrictionTransaction(deadline, networkType, mosaicId, key, account.address, '3', helper.maxFee))
                 .then((transaction: MosaicAddressRestrictionTransaction) => {
                     const aggregateTransaction = AggregateTransaction.createComplete(
                         Deadline.create(helper.epochAdjustment),

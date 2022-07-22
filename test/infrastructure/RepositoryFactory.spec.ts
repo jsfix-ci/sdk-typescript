@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { expect } from 'chai';
-import { of as observableOf, of } from 'rxjs';
+import { lastValueFrom, of as observableOf, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { NetworkConfigurationDTO, NodeRoutesApi } from 'symbol-openapi-typescript-fetch-client';
 import { instance, mock, when } from 'ts-mockito';
@@ -86,7 +86,7 @@ describe('RepositoryFactory', () => {
         try {
             const nodeRepository = repositoryFactory.createNodeRepository();
             (nodeRepository as any).nodeRoutesApi = instance(nodeRoutesApi);
-            await nodeRepository.getNodeHealth().toPromise();
+            await lastValueFrom(nodeRepository.getNodeHealth());
             expect(true).to.be.false;
         } catch (e) {
             expect(e.message).eq('{"statusCode":666,"statusMessage":"Some status text error","body":"This is the body"}');
@@ -104,11 +104,11 @@ describe('RepositoryFactory', () => {
         );
         when(repositoryMock.getNodeInfo()).thenReturn(observableOfNodeInfo);
         expect(observableOfNodeInfo).to.be.equals(observableOfNodeInfo);
-        const repositoryFactory = new (class RepositoryFactoryHttpForTest extends RepositoryFactoryHttp {
+        const repositoryFactory = new ((class RepositoryFactoryHttpForTest extends RepositoryFactoryHttp {
             createNodeRepository(): NodeRepository {
                 return instance(repositoryMock);
             }
-        })('http://localhost:3000', {
+        }))('http://localhost:3000', {
             networkType: NetworkType.PRIVATE_TEST,
         });
 
@@ -139,11 +139,11 @@ describe('RepositoryFactory', () => {
         );
         when(repositoryMock.getNodeInfo()).thenReturn(observableOfNodeInfo);
         expect(observableOfNodeInfo).to.be.equals(observableOfNodeInfo);
-        const repositoryFactory = new (class RepositoryFactoryHttpForTest extends RepositoryFactoryHttp {
+        const repositoryFactory = new ((class RepositoryFactoryHttpForTest extends RepositoryFactoryHttp {
             createNodeRepository(): NodeRepository {
                 return instance(repositoryMock);
             }
-        })('http://localhost:3000', {
+        }))('http://localhost:3000', {
             networkType: NetworkType.PRIVATE_TEST,
         });
 
@@ -177,11 +177,11 @@ describe('RepositoryFactory', () => {
 
         expect(observableOfBlockInfo).to.be.equals(observableOfBlockInfo);
 
-        const repositoryFactory = new (class RepositoryFactoryHttpForTest extends RepositoryFactoryHttp {
+        const repositoryFactory = new ((class RepositoryFactoryHttpForTest extends RepositoryFactoryHttp {
             createNetworkRepository(): NetworkRepository {
                 return instance(repositoryMock);
             }
-        })('http://localhost:3000', {
+        }))('http://localhost:3000', {
             generationHash: 'testHash',
             epochAdjustment: 1573430400,
         });
@@ -222,11 +222,11 @@ describe('RepositoryFactory', () => {
 
         expect(observableOfNetworkProperties).to.be.equals(observableOfNetworkProperties);
 
-        const repositoryFactory = new (class RepositoryFactoryHttpForTest extends RepositoryFactoryHttp {
+        const repositoryFactory = new ((class RepositoryFactoryHttpForTest extends RepositoryFactoryHttp {
             createNetworkRepository(): NetworkRepository {
                 return instance(repositoryMock);
             }
-        })('http://localhost:3000', {
+        }))('http://localhost:3000', {
             generationHash: 'testHash',
             networkType: 152,
         });
@@ -259,11 +259,11 @@ describe('RepositoryFactory', () => {
 
         expect(observableOfBlockInfo).to.be.equals(observableOfBlockInfo);
 
-        const repositoryFactory = new (class RepositoryFactoryHttpForTest extends RepositoryFactoryHttp {
+        const repositoryFactory = new ((class RepositoryFactoryHttpForTest extends RepositoryFactoryHttp {
             createNetworkRepository(): NetworkRepository {
                 return instance(repositoryMock);
             }
-        })('http://localhost:3000', {
+        }))('http://localhost:3000', {
             networkType: expectedNetworkType,
             generationHash: 'testHash',
             epochAdjustment: 1573430400,
@@ -306,11 +306,11 @@ describe('RepositoryFactory', () => {
 
         expect(observableOfNetworkProperties).to.be.equals(observableOfNetworkProperties);
 
-        const repositoryFactory = new (class RepositoryFactoryHttpForTest extends RepositoryFactoryHttp {
+        const repositoryFactory = new ((class RepositoryFactoryHttpForTest extends RepositoryFactoryHttp {
             createNetworkRepository(): NetworkRepository {
                 return instance(repositoryMock);
             }
-        })('http://localhost:3000', {
+        }))('http://localhost:3000', {
             networkType: 152,
             generationHash: 'testHash',
             epochAdjustment: 1573430400,
@@ -338,11 +338,11 @@ describe('RepositoryFactory', () => {
         }
 
         const namespaceRepository: NamespaceRepository = mock();
-        let repositoryFactory = new (class RepositoryFactoryHttpForTest extends RepositoryFactoryHttp {
+        let repositoryFactory = new ((class RepositoryFactoryHttpForTest extends RepositoryFactoryHttp {
             createNamespaceRepository(): NamespaceRepository {
                 return instance(namespaceRepository);
             }
-        })('http://localhost:3000', {
+        }))('http://localhost:3000', {
             networkType: NetworkType.PRIVATE_TEST,
             generationHash: 'testHash',
             websocketInjected: WebSocketMock,
@@ -351,11 +351,11 @@ describe('RepositoryFactory', () => {
         let listener = repositoryFactory.createListener();
         expect(listener.url).to.be.equal('http://localhost:3000/ws');
 
-        repositoryFactory = new (class RepositoryFactoryHttpForTest extends RepositoryFactoryHttp {
+        repositoryFactory = new ((class RepositoryFactoryHttpForTest extends RepositoryFactoryHttp {
             createNamespaceRepository(): NamespaceRepository {
                 return instance(namespaceRepository);
             }
-        })('http://localhost:3000', {
+        }))('http://localhost:3000', {
             networkType: NetworkType.PRIVATE_TEST,
             generationHash: 'testHash',
             websocketUrl: 'ws://localhost:3000/ws',
@@ -395,7 +395,7 @@ describe('RepositoryFactory', () => {
     it('Fail remote call ', async () => {
         const factory = new RepositoryFactoryHttp('http://localhost:2000');
         try {
-            await factory.getGenerationHash().toPromise();
+            await lastValueFrom(factory.getGenerationHash());
             expect(true).eq(false);
         } catch (e) {
             expect(e.message).contains('request to http://localhost:2000');
@@ -405,14 +405,13 @@ describe('RepositoryFactory', () => {
     it('Fail remote call invalid transaction', async () => {
         const factory = new RepositoryFactoryHttp('http://localhost:3000');
         try {
-            await factory.createTransactionRepository().getTransaction('abc', TransactionGroup.Confirmed).toPromise();
+            await lastValueFrom(factory.createTransactionRepository().getTransaction('abc', TransactionGroup.Confirmed));
             expect(true).eq(false);
         } catch (e) {
             if (
-                await factory
+                await lastValueFrom(factory
                     .getGenerationHash()
-                    .pipe(catchError(() => of(false)))
-                    .toPromise()
+                    .pipe(catchError(() => of(false))))
             ) {
                 expect(e.message).contains('"statusCode":500,"statusMessage":"Internal Server Error"');
             } else {
@@ -424,7 +423,7 @@ describe('RepositoryFactory', () => {
     it('Fail remote getCurrencies ', async () => {
         const factory = new RepositoryFactoryHttp('http://localhost:2000');
         try {
-            await factory.getCurrencies().toPromise();
+            await lastValueFrom(factory.getCurrencies());
             expect(true).eq(false);
         } catch (e) {
             expect(e.message).contains('request to http://localhost:2000');
@@ -433,7 +432,7 @@ describe('RepositoryFactory', () => {
 
     it('getCurrencies', async () => {
         const factory = new RepositoryFactoryHttp('http://localhost:2000', { networkCurrencies: NetworkCurrencies.PUBLIC });
-        const networkCurrencies = await factory.getCurrencies().toPromise();
+        const networkCurrencies = await lastValueFrom(factory.getCurrencies());
         expect(networkCurrencies).eq(NetworkCurrencies.PUBLIC);
     });
 

@@ -1,3 +1,4 @@
+import { lastValueFrom } from 'rxjs';
 /*
  * Copyright 2019 NEM
  *
@@ -375,9 +376,8 @@ describe('TransactionService', () => {
 
     describe('should return resolved transaction', () => {
         it('call transaction service', () => {
-            return transactionService
-                .resolveAliases(transactionHashes)
-                .toPromise()
+            return lastValueFrom(transactionService
+                .resolveAliases(transactionHashes))
                 .then((transactions) => {
                     expect(transactions.length).to.be.equal(8);
                     transactions.map((tx) => {
@@ -405,9 +405,8 @@ describe('TransactionService', () => {
 
     describe('Test resolve alias with multiple transaction in single block', () => {
         it('call transaction service', () => {
-            return transactionService
-                .resolveAliases(transactionHashesMultiple)
-                .toPromise()
+            return lastValueFrom(transactionService
+                .resolveAliases(transactionHashesMultiple))
                 .then((tx) => {
                     expect(tx.length).to.be.equal(3);
                     expect((tx[0] as TransferTransaction).mosaics[0].id.toHex()).to.be.equal(mosaicId.toHex());

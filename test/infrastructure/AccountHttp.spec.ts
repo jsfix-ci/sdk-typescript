@@ -1,3 +1,4 @@
+import { lastValueFrom } from 'rxjs';
 /*
  * Copyright 2020 NEM
  *
@@ -116,7 +117,7 @@ describe('AccountHttp', () => {
 
     it('getAccountInfo', async () => {
         when(accountRoutesApi.getAccountInfo(address.plain())).thenReturn(Promise.resolve(accountInfoDto));
-        const accountInfo = await accountRepository.getAccountInfo(address).toPromise();
+        const accountInfo = await lastValueFrom(accountRepository.getAccountInfo(address));
         assertAccountInfo(accountInfo);
     });
 
@@ -124,7 +125,7 @@ describe('AccountHttp', () => {
         const accountIds = {} as AccountIds;
         accountIds.addresses = [address.plain()];
         when(accountRoutesApi.getAccountsInfo(deepEqual(accountIds))).thenReturn(Promise.resolve([accountInfoDto]));
-        const accountInfos = await accountRepository.getAccountsInfo([address]).toPromise();
+        const accountInfos = await lastValueFrom(accountRepository.getAccountsInfo([address]));
         assertAccountInfo(accountInfos[0]);
     });
 
@@ -139,7 +140,7 @@ describe('AccountHttp', () => {
         when(accountRoutesApi.searchAccounts(undefined, undefined, undefined, undefined, undefined, mosaic.id)).thenReturn(
             Promise.resolve(body),
         );
-        const infos = await accountRepository.search({ mosaicId: new MosaicId(mosaic.id) }).toPromise();
+        const infos = await lastValueFrom(accountRepository.search({ mosaicId: new MosaicId(mosaic.id) }));
         assertAccountInfo(infos.data[0]);
     });
 
@@ -150,9 +151,8 @@ describe('AccountHttp', () => {
 
     it('getAccountInfo - Error', async () => {
         when(accountRoutesApi.getAccountInfo(address.plain())).thenReject(new Error('Mocked Error'));
-        await accountRepository
-            .getAccountInfo(address)
-            .toPromise()
+        await lastValueFrom(accountRepository
+            .getAccountInfo(address))
             .catch((error) => expect(error).not.to.be.undefined);
     });
 
@@ -160,9 +160,8 @@ describe('AccountHttp', () => {
         const accountIds = {} as AccountIds;
         accountIds.addresses = [address.plain()];
         when(accountRoutesApi.getAccountsInfo(deepEqual(accountIds))).thenReject(new Error('Mocked Error'));
-        await accountRepository
-            .getAccountsInfo([address])
-            .toPromise()
+        await lastValueFrom(accountRepository
+            .getAccountsInfo([address]))
             .catch((error) => expect(error).not.to.be.undefined);
     });
 
@@ -179,7 +178,7 @@ describe('AccountHttp', () => {
         merkleStateInfoDTO.tree = [merkleLeafDTO];
 
         when(accountRoutesApi.getAccountInfoMerkle(deepEqual(address.plain()))).thenReturn(Promise.resolve(merkleStateInfoDTO));
-        const merkle = await accountRepository.getAccountInfoMerkle(address).toPromise();
+        const merkle = await lastValueFrom(accountRepository.getAccountInfoMerkle(address));
         expect(merkle.raw).to.be.equal(merkleStateInfoDTO.raw);
         expect(merkle.tree.leaf).not.to.be.undefined;
     });

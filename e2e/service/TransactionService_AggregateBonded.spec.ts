@@ -1,3 +1,4 @@
+import { lastValueFrom } from 'rxjs';
 /*
  * Copyright 2019 NEM
  *
@@ -130,9 +131,8 @@ describe('TransactionService - AggregateBonded', () => {
                 helper.maxFee,
             );
             const signedTransaction = transferTransaction.signWith(account, generationHash);
-            return transactionService
-                .announce(signedTransaction, helper.listener)
-                .toPromise()
+            return lastValueFrom(transactionService
+                .announce(signedTransaction, helper.listener))
                 .then((tx: TransferTransaction) => {
                     expect(tx.signer!.publicKey).to.be.equal(account.publicKey);
                     expect((tx.recipientAddress as Address).equals(account2.address)).to.be.true;
@@ -153,9 +153,8 @@ describe('TransactionService - AggregateBonded', () => {
                 helper.maxFee,
             );
             const signedLockFundsTransaction = lockFundsTransaction.signWith(account, generationHash);
-            const tx = await transactionService
-                .announceHashLockAggregateBonded(signedLockFundsTransaction, signedAggregatedTransaction, helper.listener)
-                .toPromise();
+            const tx = await lastValueFrom(transactionService
+                .announceHashLockAggregateBonded(signedLockFundsTransaction, signedAggregatedTransaction, helper.listener));
             expect(tx.signer!.publicKey).to.be.equal(account.publicKey);
             expect(tx.type).to.be.equal(TransactionType.AGGREGATE_BONDED);
         });
@@ -173,11 +172,10 @@ describe('TransactionService - AggregateBonded', () => {
                 helper.maxFee,
             );
             const signedLockFundsTransaction = lockFundsTransaction.signWith(account, generationHash);
-            const signedLockFundsTransactionResponse = await transactionService
-                .announce(signedLockFundsTransaction, helper.listener)
-                .toPromise();
+            const signedLockFundsTransactionResponse = await lastValueFrom(transactionService
+                .announce(signedLockFundsTransaction, helper.listener));
             expect(signedLockFundsTransactionResponse.transactionInfo!.hash).to.be.equal(signedLockFundsTransaction.hash);
-            const tx = await transactionService.announceAggregateBonded(signedAggregatedTransaction, helper.listener).toPromise();
+            const tx = await lastValueFrom(transactionService.announceAggregateBonded(signedAggregatedTransaction, helper.listener));
             expect(tx.signer!.publicKey).to.be.equal(account.publicKey);
             expect(tx.type).to.be.equal(TransactionType.AGGREGATE_BONDED);
         });

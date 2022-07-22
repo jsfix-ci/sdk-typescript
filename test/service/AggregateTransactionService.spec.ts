@@ -16,7 +16,7 @@
 
 import { ChronoUnit } from '@js-joda/core';
 import { expect } from 'chai';
-import { of as observableOf } from 'rxjs';
+import { lastValueFrom, of as observableOf } from 'rxjs';
 import { AggregateNetworkPropertiesDTO, NetworkConfigurationDTO, PluginsPropertiesDTO } from 'symbol-openapi-typescript-fetch-client';
 import { deepEqual, instance, mock, when } from 'ts-mockito';
 import { MultisigRepository } from '../../src/infrastructure/MultisigRepository';
@@ -210,9 +210,8 @@ describe('AggregateTransactionService', () => {
         );
 
         const signedTransaction = aggregateTransaction.signTransactionWithCosignatories(account1, [account2], generationHash);
-        aggregateTransactionService
-            .isComplete(signedTransaction)
-            .toPromise()
+        lastValueFrom(aggregateTransactionService
+            .isComplete(signedTransaction))
             .then((isComplete) => {
                 expect(isComplete).to.be.true;
             });
@@ -243,9 +242,8 @@ describe('AggregateTransactionService', () => {
         );
 
         const signedTransaction = aggregateTransaction.signTransactionWithCosignatories(account1, [], generationHash);
-        aggregateTransactionService
-            .isComplete(signedTransaction)
-            .toPromise()
+        lastValueFrom(aggregateTransactionService
+            .isComplete(signedTransaction))
             .then((isComplete) => {
                 expect(isComplete).to.be.false;
             });
@@ -276,9 +274,8 @@ describe('AggregateTransactionService', () => {
         );
 
         const signedTransaction = aggregateTransaction.signTransactionWithCosignatories(account1, [account4], generationHash);
-        aggregateTransactionService
-            .isComplete(signedTransaction)
-            .toPromise()
+        lastValueFrom(aggregateTransactionService
+            .isComplete(signedTransaction))
             .then((isComplete) => {
                 expect(isComplete).to.be.false;
             });
@@ -317,9 +314,8 @@ describe('AggregateTransactionService', () => {
             [],
         );
         const signedTransaction = aggregateTransaction.signTransactionWithCosignatories(account1, [account4], generationHash);
-        aggregateTransactionService
-            .isComplete(signedTransaction)
-            .toPromise()
+        lastValueFrom(aggregateTransactionService
+            .isComplete(signedTransaction))
             .then((isComplete) => {
                 expect(isComplete).to.be.false;
             });
@@ -358,9 +354,8 @@ describe('AggregateTransactionService', () => {
             [],
         );
         const signedTransaction = aggregateTransaction.signTransactionWithCosignatories(account1, [account4, account2], generationHash);
-        aggregateTransactionService
-            .isComplete(signedTransaction)
-            .toPromise()
+        lastValueFrom(aggregateTransactionService
+            .isComplete(signedTransaction))
             .then((isComplete) => {
                 expect(isComplete).to.be.true;
             });
@@ -389,9 +384,8 @@ describe('AggregateTransactionService', () => {
             [],
         );
         const signedTransaction = aggregateTransaction.signWith(account2, generationHash);
-        aggregateTransactionService
-            .isComplete(signedTransaction)
-            .toPromise()
+        lastValueFrom(aggregateTransactionService
+            .isComplete(signedTransaction))
             .then((isComplete) => {
                 expect(isComplete).to.be.true;
             });
@@ -420,9 +414,8 @@ describe('AggregateTransactionService', () => {
         );
 
         const signedTransaction = aggregateTransaction.signWith(account1, generationHash);
-        aggregateTransactionService
-            .isComplete(signedTransaction)
-            .toPromise()
+        lastValueFrom(aggregateTransactionService
+            .isComplete(signedTransaction))
             .then((isComplete) => {
                 expect(isComplete).to.be.false;
             });
@@ -452,9 +445,8 @@ describe('AggregateTransactionService', () => {
         );
 
         const signedTransaction = aggregateTransaction.signWith(account4, generationHash);
-        aggregateTransactionService
-            .isComplete(signedTransaction)
-            .toPromise()
+        lastValueFrom(aggregateTransactionService
+            .isComplete(signedTransaction))
             .then((isComplete) => {
                 expect(isComplete).to.be.true;
             });
@@ -498,9 +490,8 @@ describe('AggregateTransactionService', () => {
         );
 
         const signedTransaction = aggregateTransaction.signTransactionWithCosignatories(account1, [account4], generationHash);
-        aggregateTransactionService
-            .isComplete(signedTransaction)
-            .toPromise()
+        lastValueFrom(aggregateTransactionService
+            .isComplete(signedTransaction))
             .then((isComplete) => {
                 expect(isComplete).to.be.true;
             });
@@ -543,9 +534,8 @@ describe('AggregateTransactionService', () => {
         );
 
         const signedTransaction = aggregateTransaction.signTransactionWithCosignatories(account1, [], generationHash);
-        aggregateTransactionService
-            .isComplete(signedTransaction)
-            .toPromise()
+        lastValueFrom(aggregateTransactionService
+            .isComplete(signedTransaction))
             .then((isComplete) => {
                 expect(isComplete).to.be.false;
             });
@@ -573,9 +563,8 @@ describe('AggregateTransactionService', () => {
         );
 
         const signedTransaction = aggregateTransaction.signTransactionWithCosignatories(account2, [account3], generationHash);
-        aggregateTransactionService
-            .isComplete(signedTransaction)
-            .toPromise()
+        lastValueFrom(aggregateTransactionService
+            .isComplete(signedTransaction))
             .then((isComplete) => {
                 expect(isComplete).to.be.true;
             });
@@ -603,9 +592,8 @@ describe('AggregateTransactionService', () => {
         );
 
         const signedTransaction = aggregateTransaction.signTransactionWithCosignatories(account2, [], generationHash);
-        aggregateTransactionService
-            .isComplete(signedTransaction)
-            .toPromise()
+        lastValueFrom(aggregateTransactionService
+            .isComplete(signedTransaction))
             .then((isComplete) => {
                 expect(isComplete).to.be.false;
             });
@@ -613,28 +601,27 @@ describe('AggregateTransactionService', () => {
 
     it('should call getNetworkMaxCosignaturesPerAggregate and returns', async () => {
         when(mockNetworkRepository.getNetworkProperties()).thenReturn(observableOf(getNetworkProperties('15')));
-        const max = await aggregateTransactionService.getNetworkMaxCosignaturesPerAggregate().toPromise();
+        const max = await lastValueFrom(aggregateTransactionService.getNetworkMaxCosignaturesPerAggregate());
         expect(max).to.be.equal(15);
     });
 
     it('should call getNetworkMaxCosignaturesPerAggregate and returns with single quote', async () => {
         when(mockNetworkRepository.getNetworkProperties()).thenReturn(observableOf(getNetworkProperties(`1'000`)));
-        const max = await aggregateTransactionService.getNetworkMaxCosignaturesPerAggregate().toPromise();
+        const max = await lastValueFrom(aggregateTransactionService.getNetworkMaxCosignaturesPerAggregate());
         expect(max).to.be.equal(1000);
     });
 
     it('should call getNetworkMaxCosignaturesPerAggregate and throw', () => {
         when(mockNetworkRepository.getNetworkProperties()).thenReturn(observableOf(getNetworkProperties('')));
-        aggregateTransactionService
-            .getNetworkMaxCosignaturesPerAggregate()
-            .toPromise()
+        lastValueFrom(aggregateTransactionService
+            .getNetworkMaxCosignaturesPerAggregate())
             .catch((error) => {
                 expect(error).not.to.be.undefined;
             });
     });
 
     it('should call getMaxCosignatures and returns', async () => {
-        const max = await aggregateTransactionService.getMaxCosignatures(multisig2.address).toPromise();
+        const max = await lastValueFrom(aggregateTransactionService.getMaxCosignatures(multisig2.address));
         expect(max).to.be.equal(4);
     });
 
@@ -642,7 +629,7 @@ describe('AggregateTransactionService', () => {
         when(mockedAccountRepository.getMultisigAccountGraphInfo(deepEqual(multisig2.address))).thenReturn(
             observableOf(givenMultisig2AccountGraphInfoDuplicated()),
         );
-        const max = await aggregateTransactionService.getMaxCosignatures(multisig2.address).toPromise();
+        const max = await lastValueFrom(aggregateTransactionService.getMaxCosignatures(multisig2.address));
         expect(max).to.be.equal(4);
     });
 });

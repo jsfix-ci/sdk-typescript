@@ -1,3 +1,4 @@
+import { lastValueFrom } from 'rxjs';
 /*
  * Copyright 2018 NEM
  *
@@ -154,14 +155,14 @@ describe('HashLockHttp', () => {
     describe('searchHashLock', () => {
         it('should return hash lock page info', async () => {
             await new Promise((resolve) => setTimeout(resolve, 3000));
-            const page = await hashLockRepo.search({ address: account.address }).toPromise();
+            const page = await lastValueFrom(hashLockRepo.search({ address: account.address }));
             const info = page.data[0];
             hash = info.hash;
             expect(page.data.length).to.be.greaterThan(0);
 
-            const infoFromId = await hashLockRepo.getHashLock(hash).toPromise();
+            const infoFromId = await lastValueFrom(hashLockRepo.getHashLock(hash));
             expect(infoFromId).deep.eq(info);
-            const merkleInfo = await hashLockRepo.getHashLockMerkle(hash).toPromise();
+            const merkleInfo = await lastValueFrom(hashLockRepo.getHashLockMerkle(hash));
             expect(merkleInfo.raw).to.not.be.undefined;
         });
     });
@@ -169,11 +170,10 @@ describe('HashLockHttp', () => {
     describe('searchHashLock with streamer', () => {
         it('should return hash lock page info', async () => {
             const streamer = new HashLockPaginationStreamer(hashLockRepo);
-            const infoStreamer = await streamer
+            const infoStreamer = await lastValueFrom(streamer
                 .search({ address: account.address, pageSize: 20, order: Order.Asc })
-                .pipe(take(20), toArray())
-                .toPromise();
-            const info = await hashLockRepo.search({ address: account.address, pageSize: 20, order: Order.Asc }).toPromise();
+                .pipe(take(20), toArray()));
+            const info = await lastValueFrom(hashLockRepo.search({ address: account.address, pageSize: 20, order: Order.Asc }));
             expect(infoStreamer.length).to.be.greaterThan(0);
             deepEqual(infoStreamer[0], info.data[0]);
         });
@@ -181,7 +181,7 @@ describe('HashLockHttp', () => {
 
     describe('getHashLock', () => {
         it('should return hash lock info given hash', async () => {
-            const info = await hashLockRepo.getHashLock(hash).toPromise();
+            const info = await lastValueFrom(hashLockRepo.getHashLock(hash));
             expect(info.ownerAddress.plain()).to.be.equal(account.address.plain());
             expect(info.amount.toString()).to.be.equal('10000000');
         });

@@ -1,3 +1,4 @@
+import { lastValueFrom } from 'rxjs';
 /*
  * Copyright 2019 NEM
  *
@@ -65,7 +66,7 @@ describe('TransactionPaginationStreamer', () => {
                 );
             }),
         );
-        return observableOfResults.pipe(toArray()).toPromise();
+        return lastValueFrom(observableOfResults.pipe(toArray()));
     };
 
     describe('Get Transactions', () => {

@@ -1,3 +1,4 @@
+import { lastValueFrom } from 'rxjs';
 /*
  * Copyright 2020 NEM
  *
@@ -78,11 +79,11 @@ describe('MultisigAccounts', () => {
             await new Promise((resolve) => setTimeout(resolve, 3000));
             const multisigRepository = helper.repositoryFactory.createMultisigRepository();
 
-            const infoFromId = await multisigRepository.getMultisigAccountInfo(multisigAccount.address).toPromise();
+            const infoFromId = await lastValueFrom(multisigRepository.getMultisigAccountInfo(multisigAccount.address));
             expect(infoFromId).to.not.be.undefined;
             expect(infoFromId.accountAddress).to.deep.eq(multisigAccount.address);
             expect(infoFromId.cosignatoryAddresses).to.deep.eq([cosignAccount1.address, cosignAccount3.address, cosignAccount2.address]);
-            const merkleInfo = await multisigRepository.getMultisigAccountInfoMerkle(multisigAccount.address).toPromise();
+            const merkleInfo = await lastValueFrom(multisigRepository.getMultisigAccountInfoMerkle(multisigAccount.address));
             expect(merkleInfo.raw).to.not.be.undefined;
         });
     });

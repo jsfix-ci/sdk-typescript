@@ -1,3 +1,4 @@
+import { lastValueFrom } from 'rxjs';
 /*
  * Copyright 2020 NEM
  *
@@ -83,11 +84,10 @@ describe('ReceiptHttp', () => {
             Promise.resolve(resolutionPage),
         );
 
-        const statement = await receiptRepository
+        const statement = await lastValueFrom(receiptRepository
             .searchMosaicResolutionStatements({
                 height: UInt64.fromUint(1),
-            })
-            .toPromise();
+            }));
         expect(statement).to.be.not.null;
         expect(statement.data[0].height.toString()).to.be.equal('1');
         expect(statement.data[0].resolutionType.valueOf()).to.be.equal(ResolutionType.Mosaic);
@@ -122,11 +122,10 @@ describe('ReceiptHttp', () => {
             Promise.resolve(resolutionPage),
         );
 
-        const statement = await receiptRepository
+        const statement = await lastValueFrom(receiptRepository
             .searchAddressResolutionStatements({
                 height: UInt64.fromUint(1),
-            })
-            .toPromise();
+            }));
         expect(statement).to.be.not.null;
         expect(statement.data[0].height.toString()).to.be.equal('1');
         expect(statement.data[0].resolutionType.valueOf()).to.be.equal(ResolutionType.Address);
@@ -176,11 +175,10 @@ describe('ReceiptHttp', () => {
             ),
         ).thenReturn(Promise.resolve(resolutionPage));
 
-        const statement = await receiptRepository
+        const statement = await lastValueFrom(receiptRepository
             .searchReceipts({
                 height: UInt64.fromUint(1),
-            })
-            .toPromise();
+            }));
         expect(statement).to.be.not.null;
         expect(statement.data[0].height.toString()).to.be.equal('1');
         expect((statement.data[0].receipts[0] as BalanceChangeReceipt).amount.toString()).to.be.equal('100');
@@ -203,9 +201,8 @@ describe('ReceiptHttp', () => {
                 undefined,
             ),
         ).thenReject(new Error('Mocked Error'));
-        await receiptRepository
-            .searchReceipts({ height: UInt64.fromUint(1) })
-            .toPromise()
+        await lastValueFrom(receiptRepository
+            .searchReceipts({ height: UInt64.fromUint(1) }))
             .catch((error) => expect(error).not.to.be.undefined);
     });
 
@@ -213,9 +210,8 @@ describe('ReceiptHttp', () => {
         when(receiptRoutesApi.searchMosaicResolutionStatements('1', undefined, undefined, undefined, undefined)).thenReject(
             new Error('Mocked Error'),
         );
-        await receiptRepository
-            .searchMosaicResolutionStatements({ height: UInt64.fromUint(1) })
-            .toPromise()
+        await lastValueFrom(receiptRepository
+            .searchMosaicResolutionStatements({ height: UInt64.fromUint(1) }))
             .catch((error) => expect(error).not.to.be.undefined);
     });
 
@@ -223,9 +219,8 @@ describe('ReceiptHttp', () => {
         when(receiptRoutesApi.searchAddressResolutionStatements('1', undefined, undefined, undefined, undefined)).thenReject(
             new Error('Mocked Error'),
         );
-        await receiptRepository
-            .searchAddressResolutionStatements({ height: UInt64.fromUint(1) })
-            .toPromise()
+        await lastValueFrom(receiptRepository
+            .searchAddressResolutionStatements({ height: UInt64.fromUint(1) }))
             .catch((error) => expect(error).not.to.be.undefined);
     });
 });

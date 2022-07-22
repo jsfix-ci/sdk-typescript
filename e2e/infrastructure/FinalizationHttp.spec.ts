@@ -1,3 +1,4 @@
+import { lastValueFrom } from 'rxjs';
 /*
  * Copyright 2018 NEM
  *
@@ -34,7 +35,7 @@ describe('FinalizationHttp', () => {
 
     describe('getFinalizationProofAtEpoch', () => {
         it('should return finalization proof at epoch', async () => {
-            const dto = await finalizationRepository.getFinalizationProofAtEpoch(1).toPromise();
+            const dto = await lastValueFrom(finalizationRepository.getFinalizationProofAtEpoch(1));
             expect(dto).not.to.be.null;
             expect(dto.height).to.deep.eq(UInt64.fromUint(1));
             expect(dto.version).to.eq(1);
@@ -46,7 +47,7 @@ describe('FinalizationHttp', () => {
 
     describe('getNetworkName', () => {
         it('should return finalization proof at height', async () => {
-            const dto = await finalizationRepository.getFinalizationProofAtHeight(UInt64.fromUint(1)).toPromise();
+            const dto = await lastValueFrom(finalizationRepository.getFinalizationProofAtHeight(UInt64.fromUint(1)));
             expect(dto).not.to.be.null;
             expect(dto.height).to.deep.eq(UInt64.fromUint(1));
             expect(dto.version).to.eq(1);

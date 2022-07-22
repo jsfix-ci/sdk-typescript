@@ -1,3 +1,4 @@
+import { lastValueFrom } from 'rxjs';
 /*
  * Copyright 2020 NEM
  *
@@ -87,7 +88,7 @@ describe('SecretLockHttp', () => {
         when(secretLockRoutesApi.searchSecretLock(address.plain(), lockDto.secret, undefined, undefined, undefined, undefined)).thenReturn(
             Promise.resolve(body),
         );
-        const infos = await secretLockRepository.search({ address, secret: lockDto.secret }).toPromise();
+        const infos = await lastValueFrom(secretLockRepository.search({ address, secret: lockDto.secret }));
         assertHashInfo(infos.data[0]);
     });
 
@@ -109,7 +110,7 @@ describe('SecretLockHttp', () => {
         merkleStateInfoDTO.tree = [merkleLeafDTO];
 
         when(secretLockRoutesApi.getSecretLockMerkle('hash')).thenReturn(Promise.resolve(merkleStateInfoDTO));
-        const merkle = await secretLockRepository.getSecretLockMerkle('hash').toPromise();
+        const merkle = await lastValueFrom(secretLockRepository.getSecretLockMerkle('hash'));
         expect(merkle.raw).to.be.equal(merkleStateInfoDTO.raw);
         expect(merkle.tree.leaf).not.to.be.undefined;
     });

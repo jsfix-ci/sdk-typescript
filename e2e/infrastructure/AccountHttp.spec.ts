@@ -1,3 +1,4 @@
+import { lastValueFrom } from 'rxjs';
 /*
  * Copyright 2018 NEM
  *
@@ -164,24 +165,24 @@ describe('AccountHttp', () => {
 
     describe('getAccountInfo', () => {
         it('should return account data given a NEM Address', async () => {
-            const accountInfo = await accountRepository.getAccountInfo(accountAddress).toPromise();
+            const accountInfo = await lastValueFrom(accountRepository.getAccountInfo(accountAddress));
             expect(accountInfo.publicKey).to.be.equal(accountPublicKey);
 
-            const merkleInfo = await accountRepository.getAccountInfoMerkle(accountInfo.address).toPromise();
+            const merkleInfo = await lastValueFrom(accountRepository.getAccountInfoMerkle(accountInfo.address));
             expect(merkleInfo.raw).to.not.be.undefined;
         });
     });
 
     describe('getAccountsInfo', () => {
         it('should return account data given a NEM Address', async () => {
-            const accountsInfo = await accountRepository.getAccountsInfo([accountAddress]).toPromise();
+            const accountsInfo = await lastValueFrom(accountRepository.getAccountsInfo([accountAddress]));
             expect(accountsInfo[0].publicKey).to.be.equal(accountPublicKey);
         });
     });
 
     describe('searchAccount', () => {
         it('should return account info', async () => {
-            const info = await accountRepository.search({}).toPromise();
+            const info = await lastValueFrom(accountRepository.search({}));
             expect(info.data.length).to.be.greaterThan(0);
         });
     });
@@ -189,11 +190,10 @@ describe('AccountHttp', () => {
     describe('searchAccount with streamer', () => {
         it('should return account info', async () => {
             const streamer = new AccountPaginationStreamer(accountRepository);
-            const infoStreamer = await streamer
+            const infoStreamer = await lastValueFrom(streamer
                 .search({ pageSize: 20, order: Order.Asc, orderBy: AccountOrderBy.Id })
-                .pipe(take(20), toArray())
-                .toPromise();
-            const info = await accountRepository.search({ pageSize: 20, order: Order.Asc, orderBy: AccountOrderBy.Id }).toPromise();
+                .pipe(take(20), toArray()));
+            const info = await lastValueFrom(accountRepository.search({ pageSize: 20, order: Order.Asc, orderBy: AccountOrderBy.Id }));
             expect(infoStreamer.length).to.be.greaterThan(0);
             deepEqual(infoStreamer[0], info.data[0]);
         });
@@ -201,9 +201,8 @@ describe('AccountHttp', () => {
 
     describe('transactions', () => {
         it('should not return accounts when account does not exist', () => {
-            return accountRepository
-                .getAccountInfo(Account.generateNewAccount(networkType).address)
-                .toPromise()
+            return lastValueFrom(accountRepository
+                .getAccountInfo(Account.generateNewAccount(networkType).address))
                 .then(
                     () => {
                         return Promise.reject('should fail!');
@@ -220,7 +219,7 @@ describe('AccountHttp', () => {
 
     describe('getAddressNames', () => {
         it('should call getAddressNames successfully', async () => {
-            const addressNames = await namespaceRepository.getAccountsNames([accountAddress]).toPromise();
+            const addressNames = await lastValueFrom(namespaceRepository.getAccountsNames([accountAddress]));
             expect(addressNames.length).to.be.greaterThan(0);
         });
     });
@@ -228,15 +227,14 @@ describe('AccountHttp', () => {
     describe('getMultisigAccountGraphInfo', () => {
         it('should call getMultisigAccountGraphInfo successfully', async () => {
             await new Promise((resolve) => setTimeout(resolve, 3000));
-            const multisigAccountGraphInfo = await multisigRepository
-                .getMultisigAccountGraphInfo(multisigAccount.publicAccount.address)
-                .toPromise();
+            const multisigAccountGraphInfo = await lastValueFrom(multisigRepository
+                .getMultisigAccountGraphInfo(multisigAccount.publicAccount.address));
             expect(multisigAccountGraphInfo.multisigEntries.get(0)![0].accountAddress.plain()).to.be.equal(multisigAccount.address.plain());
         });
     });
     describe('getMultisigAccountInfo', () => {
         it('should call getMultisigAccountInfo successfully', async () => {
-            const multisigAccountInfo = await multisigRepository.getMultisigAccountInfo(multisigAccount.publicAccount.address).toPromise();
+            const multisigAccountInfo = await lastValueFrom(multisigRepository.getMultisigAccountInfo(multisigAccount.publicAccount.address));
             expect(multisigAccountInfo.accountAddress.plain()).to.be.equal(multisigAccount.address.plain());
         });
     });
